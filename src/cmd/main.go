@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"qzipgo/pkg"
+	"qzipgo/src/pkg"
 )
 
 func main() {

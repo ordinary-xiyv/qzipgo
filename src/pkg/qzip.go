@@ -4,7 +4,7 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
-	"qzipgo/internal"
+	"qzipgo/src/internal"
 )
 
 // 声明一个全局变量 QatService
@@ -41,7 +41,7 @@ func hwIsAvailable(hws []*internal.Hardwarese) bool {
 func RunCompressTest() bool {
 	log.Println("***********************进行简单的压缩测试***********************")
 	// 定义相对路径
-	relPath := "testfiles/test_15mb.json"
+	relPath := "src/testfiles/test_15mb.json"
 
 	// 获取当前工作目录
 	absPath, err := filepath.Abs(relPath)
@@ -76,7 +76,7 @@ func RunCompressTest() bool {
 func RunDecompressTest() bool {
 	log.Println("***********************进行简单的解压测试***********************")
 	// 定义相对路径
-	relPath := "testfiles/test_15mb.json.gz"
+	relPath := "src/testfiles/test_15mb.json.gz"
 
 	// 获取当前工作目录
 	absPath, err := filepath.Abs(relPath)
