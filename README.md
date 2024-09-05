@@ -9,4 +9,4 @@
 确保你已经安装了 Go 语言环境。你可以通过以下命令安装 Qzip：
 
 ```bash
-go get -u github.com/yourusername/qzip
+go get -u github.com/ordinary-xiyv/qzip
