@@ -1,3 +1,3 @@
 module github.com/ordinary-xiyv/qzipgo
 
-go 1.22.6
+go 1.21.7
