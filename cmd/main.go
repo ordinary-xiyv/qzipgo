@@ -2,17 +2,22 @@ package main
 
 import (
 	"fmt"
-
-	"qzipgo/internal"
+	"qzipgo/pkg"
 )
 
-// 声明一个全局变量 QatService
-var QatService *internal.QatService = &internal.QatService{}
-
 func main() {
-	fmt.Println("Hello, World!")
-	internal.CheckQATEnv(QatService)
-	internal.CheckQATHWState(QatService)
 
-	fmt.Print(QatService.String())
+	fmt.Println("=========================")
+	// 检查是否qat是否可用
+	pkg.Available()
+
+	// // 进行简单的压缩测试
+	// fmt.Println("进行简单的压缩测试")
+	// pkg.RunCompressTest()
+
+	// // 进行简单的解压测试
+	// fmt.Println("进行简单的解压测试")
+	// pkg.RunDecompressTest()
+
+	fmt.Println("=========================")
 }
