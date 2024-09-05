@@ -26,14 +26,16 @@ type Hardwarese struct {
 	HwType *string
 }
 
-func CheckQATEnv(qat *QatService) {
+func CheckQATEnv(qat *QatService) bool {
+	var available bool = true
 	// 获取环境变量
 	icpRoot := os.Getenv("ICP_ROOT")
 	qzRoot := os.Getenv("QZ_ROOT")
 
 	// 检查环境变量是否存在且不为空
 	if icpRoot == "" {
-		log.Fatalln("ICP_ROOT 环境变量不存在或为空")
+		log.Println("ICP_ROOT 环境变量不存在或为空")
+		available = false
 	} else {
 		log.Println(greenBold, "ICP_ROOT:", icpRoot, reset)
 
@@ -41,15 +43,17 @@ func CheckQATEnv(qat *QatService) {
 	}
 
 	if qzRoot == "" {
-		log.Fatalln("QZ_ROOT 环境变量不存在或为空")
+		log.Println("QZ_ROOT 环境变量不存在或为空")
+		available = false
 	} else {
 		log.Println(greenBold, "QZ_ROOT:", qzRoot, reset)
 
 		qat.QzRoot = &qzRoot
 	}
+	return available
 }
 
-func CheckQATHWState(qat *QatService) {
+func CheckQATHWState(qat *QatService) bool {
 	// 执行命令并获取输出
 	// 创建命令
 	cmd := exec.Command("service", "qat_service", "status")
@@ -57,8 +61,8 @@ func CheckQATHWState(qat *QatService) {
 	// 获取输出
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatalf("执行命令时出错: %s\n", err)
-		return
+		log.Printf("执行命令时出错: %s\n", err)
+		return false
 	}
 
 	// output := `
@@ -76,7 +80,7 @@ func CheckQATHWState(qat *QatService) {
 
 	if len(matches) == 0 {
 		log.Println("\033[1;31m未找到任何设备的信息\033[0m")
-		return
+		return false
 	}
 
 	// 遍历所有匹配项并输出
@@ -92,7 +96,7 @@ func CheckQATHWState(qat *QatService) {
 	}
 
 	qat.Hardwareses = hardwareses
-
+	return true
 }
 
 func (qat *QatService) String() string {

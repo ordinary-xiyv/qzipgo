@@ -12,12 +12,13 @@ var QatService *internal.QatService = &internal.QatService{}
 
 // 检查是否qat是否可用
 func Available() bool {
-	internal.CheckQATEnv(QatService)
-	internal.CheckQATHWState(QatService)
-	if QatService.IcpRoot != nil && QatService.QzRoot != nil && hwIsAvailable(QatService.Hardwareses) && RunCompressTest() && RunDecompressTest() {
+	envAvailable := internal.CheckQATEnv(QatService)
+	hwAvailable := internal.CheckQATHWState(QatService)
+	if envAvailable && hwAvailable && hwIsAvailable(QatService.Hardwareses) && RunCompressTest() && RunDecompressTest() {
 		log.Println("\033[1;32m ****** QAT服务可用 ******\033[0m")
 	} else {
-		log.Fatal("\033[1;31m ****** QAT服务不可用 ****** \033[0m")
+		log.Print("\033[1;31m ****** QAT服务不可用 ****** \033[0m")
+		return false
 	}
 
 	//fmt.Print(QatService.String())
@@ -47,7 +48,7 @@ func RunCompressTest() bool {
 	absPath, err := filepath.Abs(relPath)
 	log.Println(absPath)
 	if err != nil {
-		log.Fatalf("获取绝对路径时出错: %s\n", err)
+		log.Printf("获取当前工作目录时出错: %s\n", err)
 		return false
 	}
 	cmd := exec.Command("qzip", "-k", absPath)
@@ -61,7 +62,7 @@ func RunCompressTest() bool {
 			exitCode := exitError.ExitCode()
 			log.Printf("命令执行失败，退出状态码: %d\n", exitCode)
 		} else {
-			log.Fatalf("执行命令时出错: %s\n", err)
+			log.Printf("执行命令时出错: %s\n", err)
 		}
 		return false
 	}
@@ -82,7 +83,7 @@ func RunDecompressTest() bool {
 	absPath, err := filepath.Abs(relPath)
 	log.Println(absPath)
 	if err != nil {
-		log.Fatalf("获取绝对路径时出错: %s\n", err)
+		log.Printf("获取当前工作目录时出错: %s\n", err)
 		return false
 	}
 	cmd := exec.Command("qzip", "-d", absPath)
@@ -95,7 +96,7 @@ func RunDecompressTest() bool {
 			exitCode := exitError.ExitCode()
 			log.Printf("命令执行失败，退出状态码: %d\n", exitCode)
 		} else {
-			log.Fatalf("执行命令时出错: %s\n", err)
+			log.Printf("执行命令时出错: %s\n", err)
 		}
 		return false
 	}
