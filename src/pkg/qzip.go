@@ -1,10 +1,10 @@
 package pkg
 
 import (
+	"github.com/ordinary-xiyv/qzipgo/src/internal"
 	"log"
 	"os/exec"
 	"path/filepath"
-	"qzipgo/src/internal"
 )
 
 // 声明一个全局变量 QatService
