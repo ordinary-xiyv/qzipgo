@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+
+	"github.com/ordinary-xiyv/qzipgo/src/internal"
 	"github.com/ordinary-xiyv/qzipgo/src/pkg"
 )
 
@@ -20,4 +23,10 @@ func main() {
 	// pkg.RunDecompressTest()
 
 	fmt.Println("=========================")
+
+	cmd := internal.GetDefaultQzipCommand()
+
+	if err := internal.ExecuteQzipCommand(cmd); err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
 }
