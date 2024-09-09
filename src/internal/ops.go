@@ -64,7 +64,7 @@ func (q *QzipCommand) SetLevel() {
 		// 未知级别或者不指定，均默认使用LEVEL_5
 		q.Level = LEVEL_5
 	}
-	if q.Compression {
+	if q.Compression && q.Level != LEVEL_5 {
 		q.Options = append(q.Options, "-L", fmt.Sprintf("%d", q.Level))
 	}
 

@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"os/exec"
 )
@@ -45,29 +46,44 @@ func GetDefaultQzipCommand() QzipCommand {
 		Level:       LEVEL_5,
 		KeepSource:  true,
 		Recursive:   false,
+		BusyPoll:    false,
 	}
 }
 
 func (q *QzipCommand) BuildQzipCommand() *exec.Cmd {
-	args := []string{}
-
+	if q.InputFile == "" {
+		return nil
+	}
+	// =============================
+	// 如果不是压缩，那么需要设置解压选项
 	if !q.Compression {
-		args = append(args, "-d") // 默认是压缩，如果是解压，需要-d选项
+		q.SetDecompression()
 	}
+	// 如果勾选了保留源文件，那么需要设置保留源文件选项
+	q.SetKeepSource()
+	// 目录递归：需要传入一个目录并且勾选了递归操作   作用： 单独为目录下全部文件生成压缩包
+	q.SetRecursive()
+	// 忙轮询，通常用于处理并发的压缩或解压缩请求
+	q.SetBusyPoll()
+	// 设置压缩算法 一般使用默认
+	q.SetAlgorithm()
+	// 设置文件头 一般使用默认
+	q.SetFileHeader()
+	// 设置压缩级别
+	q.SetLevel()
+	// 设置输出文件名称 目录则不需要
+	q.SetOutputFile()
 
-	args = append(args, q.InputFile)
-
-	if q.OutputFile != "" {
-		args = append(args, "-o", q.OutputFile) // 假设有一个输出文件选项
-	}
-
-	args = append(args, q.Options...) // 添加其他选项
-
-	return exec.Command("qzip", args...)
+	q.Options = append(q.Options, q.InputFile)
+	return exec.Command("qzip", q.Options...)
 }
 
 func ExecuteQzipCommand(cmd QzipCommand) error {
 	qzipCmd := cmd.BuildQzipCommand()
+	if condition := qzipCmd == nil; condition {
+		return errors.New("qzip command is nil")
+	}
+	fmt.Println("Executing command:", qzipCmd.String())
 	output, err := qzipCmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error executing command: %s, output: %s", err, output)
