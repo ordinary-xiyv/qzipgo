@@ -21,7 +21,7 @@ func TestQzip(t *testing.T) {
 func TestCompress(t *testing.T) {
 	cmd := internal.GetDefaultQzipCommand()
 	cmd.KeepSource = true
-	cmd.InputFile = "/tmp/test.txt"
+	cmd.InputFile = append(cmd.InputFile, "/tmp/test.txt")
 
 	if err := internal.ExecuteQzipCommand(cmd); err != nil {
 		log.Fatalf("Failed to execute qzip command: %s", err)
@@ -34,9 +34,75 @@ func TestDecompress(t *testing.T) {
 	cmd := internal.GetDefaultQzipCommand()
 	cmd.KeepSource = true
 	cmd.Compression = false
-	cmd.InputFile = "/tmp/test.txt.gz"
+	cmd.InputFile = append(cmd.InputFile, "/tmp/test.txt.gz")
 
 	if err := internal.ExecuteQzipCommand(cmd); err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+// qzip -k -o filepath filepath 测试压缩
+// output:Executing command: /usr/local/bin/qzip -k -o /tmp/test1111111.txt /tmp/test.txt
+func TestCompressWithOutputFile(t *testing.T) {
+	err := pkg.CompressWithOutputFile("/tmp/test.txt", "/tmp/test_with_output_file.txt")
+
+	if err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+// TestCompressDictory tests compressing a directory with the CompressDictory function.
+func TestCompressDictory(t *testing.T) {
+
+	err := pkg.CompressDictoryByEveryFile("/tmp/test")
+
+	if err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+func TestDeCompressDictory(t *testing.T) {
+
+	err := pkg.DecompressDictoryByEveryFile("/tmp/test")
+
+	if err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+// TestCompressFiles tests compressing multiple files with the CompressFiles function.
+func TestCompressFiles(t *testing.T) {
+
+	err := pkg.CompressFiles("/tmp/test/1.txt", "/tmp/test/2.txt")
+
+	if err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+func TestDeCompressFiles(t *testing.T) {
+
+	err := pkg.DecompressFiles("/tmp/test/1.txt.gz", "/tmp/test/2.txt.gz")
+
+	if err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+func TestCompressFilesWithBusyPoll(t *testing.T) {
+
+	err := pkg.CompressDictoryWithBusyPoll("/tmp/test")
+
+	if err != nil {
+		log.Fatalf("Failed to execute qzip command: %s", err)
+	}
+}
+
+func TestDeCompressFilesWithBusyPoll(t *testing.T) {
+
+	err := pkg.DecompressDictoryWithBusyPoll("/tmp/test")
+
+	if err != nil {
 		log.Fatalf("Failed to execute qzip command: %s", err)
 	}
 }

@@ -45,13 +45,13 @@ const (
 func (q *QzipCommand) SetAlgorithm() {
 	switch q.Algorithm {
 	case LZ4:
-		q.Options = append(q.Options, "-A lz4")
+		q.Options = append(q.Options, "-A", "lz4")
 	case GZIP:
-		q.Options = append(q.Options, "-A gzip")
+		q.Options = append(q.Options, "-A", "gzip")
 	case LZ4S:
-		q.Options = append(q.Options, "-A lz4s")
+		q.Options = append(q.Options, "-A", "lz4s")
 	case GZIPEXT:
-		q.Options = append(q.Options, "-A gzipext")
+		q.Options = append(q.Options, "-A", "gzipext")
 	default:
 		// 未知算法或者不指定，均默认使用GZIP，不需要加任何参数
 		return
@@ -105,7 +105,14 @@ func (q *QzipCommand) SetRecursive() {
 // 设置忙轮询
 func (q *QzipCommand) SetBusyPoll() {
 	if q.BusyPoll {
-		q.Options = append(q.Options, "-P busy")
+		q.Options = append(q.Options, "-P", "busy")
+	}
+}
+
+// 设置并发数
+func (q *QzipCommand) SetConcurrency() {
+	if q.Concurrency > 0 {
+		q.Options = append(q.Options, "-r", fmt.Sprintf("%d", q.Concurrency))
 	}
 }
 
@@ -115,25 +122,25 @@ func (q *QzipCommand) SetFileHeader() error {
 	switch q.FileHeader {
 	case FILE_HEADER_GZIP:
 		if q.Algorithm == GZIP {
-			q.Options = append(q.Options, "-O gzip")
+			q.Options = append(q.Options, "-O", "gzip")
 			return nil
 		}
 		return errors.New("算法与指定文件头不匹配，已忽略")
 	case FILE_HEADER_GZIPEXT:
 		if q.Algorithm == GZIPEXT {
-			q.Options = append(q.Options, "-O gzipext")
+			q.Options = append(q.Options, "-O", "gzipext")
 			return nil
 		}
 		return errors.New("算法与指定文件头不匹配，已忽略")
 	case FILE_HEADER_LZ4:
 		if q.Algorithm == LZ4 {
-			q.Options = append(q.Options, "-O lz4")
+			q.Options = append(q.Options, "-O", "lz4")
 			return nil
 		}
 		return errors.New("算法与指定文件头不匹配，已忽略")
 	case FILE_HEADER_LZ4S:
 		if q.Algorithm == LZ4S {
-			q.Options = append(q.Options, "-O lz4s")
+			q.Options = append(q.Options, "-O", "lz4s")
 			return nil
 		}
 		return errors.New("算法与指定文件头不匹配，已忽略")

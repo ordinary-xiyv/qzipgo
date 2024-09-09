@@ -10,7 +10,7 @@ type (
 	QzipCommand struct {
 		IsDirctory bool
 		//  输入文件
-		InputFile string
+		InputFile []string
 		// -o 输出文件
 		OutputFile string
 		// -O 压缩文件头格式
@@ -27,6 +27,8 @@ type (
 		Recursive bool
 		// -P 忙轮询
 		BusyPoll bool
+		// -r 并发数
+		Concurrency int
 		// 其他单独选项
 		Options []string // 用于存储其他选项
 	}
@@ -47,11 +49,14 @@ func GetDefaultQzipCommand() QzipCommand {
 		KeepSource:  true,
 		Recursive:   false,
 		BusyPoll:    false,
+		OutputFile:  "",
+		InputFile:   nil,
+		Concurrency: 10,
 	}
 }
 
 func (q *QzipCommand) BuildQzipCommand() *exec.Cmd {
-	if q.InputFile == "" {
+	if len(q.InputFile) == 0 {
 		return nil
 	}
 	// =============================
@@ -73,8 +78,9 @@ func (q *QzipCommand) BuildQzipCommand() *exec.Cmd {
 	q.SetLevel()
 	// 设置输出文件名称 目录则不需要
 	q.SetOutputFile()
-
-	q.Options = append(q.Options, q.InputFile)
+	// 设置并发数
+	q.SetConcurrency()
+	q.Options = append(q.Options, q.InputFile...)
 	return exec.Command("qzip", q.Options...)
 }
 

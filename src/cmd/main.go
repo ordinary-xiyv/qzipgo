@@ -25,6 +25,11 @@ func main() {
 	fmt.Println("=========================")
 
 	cmd := internal.GetDefaultQzipCommand()
+	cmd.KeepSource = true
+
+	cmd.InputFile = append(cmd.InputFile, "/tmp/test.txt")
+
+	cmd.OutputFile = "/tmp/test1111111.txt"
 
 	if err := internal.ExecuteQzipCommand(cmd); err != nil {
 		log.Fatalf("Failed to execute qzip command: %s", err)
