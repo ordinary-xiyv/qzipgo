@@ -149,3 +149,53 @@ func (q *QzipCommand) SetFileHeader() error {
 		return nil
 	}
 }
+
+// 设置压缩或者解压
+func (t *TarCommand) SetCompressionType() {
+	if t.Compression {
+		t.Options = append(t.Options, "-cvf")
+	} else {
+		t.Options = append(t.Options, "-xvf")
+	}
+}
+
+// 设置归档文件
+func (t *TarCommand) SetArchiveFile() {
+	if t.ArchiveFile != "" {
+		t.Options = append(t.Options, t.ArchiveFile)
+	}
+}
+
+// 设置-I 选项，添加qzip命令
+//
+// 在命令行当中，qzip和qzip -d必须添加引号，此代码中不需要
+//
+// eg：tar -xvf mydir.tgz -I "qzip -d" -C ./
+//
+// 原因：exec.Cmd类型的Options属性是[]string类型的，因此每个选项都可以正确传递给shell
+func (t *TarCommand) SetQzipCommand() {
+	if t.Compression {
+		t.Options = append(t.Options, "-I", "qzip")
+	} else {
+		t.Options = append(t.Options, "-I", "qzip -d")
+	}
+}
+
+// 设置输出文件路径
+func (t *TarCommand) SetOutputFile() {
+	if t.OutputFile != "" {
+		t.Options = append(t.Options, "-C", t.OutputFile)
+	}
+}
+
+// 设置输入文件
+func (t *TarCommand) SetInputFile() {
+	t.Options = append(t.Options, t.InputFile...)
+}
+
+// 设置解压时下需要去掉的目录层级
+func (t *TarCommand) SetComponents() {
+	if t.components > 0 && !t.Compression {
+		t.Options = append(t.Options, fmt.Sprintf("--strip-components=%d", t.components))
+	}
+}
