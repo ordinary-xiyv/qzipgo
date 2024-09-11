@@ -15,15 +15,46 @@ const (
 )
 
 type QatService struct {
-	IcpRoot     *string
-	QzRoot      *string
-	Hardwareses []*Hardwarese
+	IcpRoot         *string
+	QzRoot          *string
+	Hardwareses     []*Hardwarese
+	TarIsAvailable  bool
+	QzipIsAvailable bool
 }
 
 type Hardwarese struct {
 	Name   *string
 	State  *string
 	HwType *string
+}
+
+func CheckQzipIsAvailable(qat *QatService) bool {
+	// 检查 qzip 版本
+	cmd := exec.Command("qzip", "--version")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("qzip 未安装或无法执行: %v\n", err)
+		qat.QzipIsAvailable = false
+		return false
+	}
+	fmt.Printf("qzip 版本信息:\n%s\n", output)
+	qat.QzipIsAvailable = true
+	return true
+}
+
+func CheckTarIsAvailable(qat *QatService) bool {
+	// 检查 tar 版本
+	cmd := exec.Command("tar", "--version")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("tar 未安装或无法执行: %v\n", err)
+		qat.TarIsAvailable = false
+		return false
+	}
+	fmt.Printf("tar 版本信息:\n%s\n", output)
+
+	qat.TarIsAvailable = true
+	return true
 }
 
 func CheckQATEnv(qat *QatService) bool {
@@ -104,7 +135,7 @@ func (qat *QatService) String() string {
 	for _, hw := range qat.Hardwareses {
 		hwStrings = hwStrings + hw.String()
 	}
-	QatService := fmt.Sprintf("ICP_ROOT:\n\t%s\nQZ_ROOT:\n\t%s\nHWs:\n%s\n", *qat.IcpRoot, *qat.QzRoot, hwStrings)
+	QatService := fmt.Sprintf("ICP_ROOT:\n\t%s\nQZ_ROOT:\n\t%s\nTarIsAvailable:\n\t%t\nQzipIsAvailable:\n\t%t\nHWs:\n%s\n", *qat.IcpRoot, *qat.QzRoot, qat.TarIsAvailable, qat.QzipIsAvailable, hwStrings)
 	return QatService
 }
 

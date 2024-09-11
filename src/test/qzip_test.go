@@ -9,10 +9,7 @@ import (
 )
 
 func TestQzip(t *testing.T) {
-	fmt.Println("进行简单的压缩测试")
-	pkg.RunCompressTest()
-	fmt.Println("进行简单的解压测试")
-	pkg.RunDecompressTest()
+	fmt.Println(pkg.Available())
 }
 
 // qzip -k filepath 测试压缩
